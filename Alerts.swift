@@ -1,4 +1,4 @@
-//
+// Checking to see if it has been updated on GITHUB
 //  Alerts.swift
 //  Amped Recovery App
 //
