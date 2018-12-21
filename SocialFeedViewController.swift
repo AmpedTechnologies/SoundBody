@@ -234,7 +234,7 @@ class SocialFeedViewController: UIViewController, UITableViewDelegate, UITableVi
         
         // Setup navigation bar title
         let titleOut = UILabel(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-        titleOut.text = "Amped Nation"
+        titleOut.text = "RVIVE Nation"
         self.navigationItem.title = titleOut.text
 
         // Setup the size of the top collectionview bar so that it is placed correctly on all screen sizes

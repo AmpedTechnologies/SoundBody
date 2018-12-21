@@ -14,6 +14,7 @@ import LocalAuthentication
 import Kingfisher
 import CryptoSwift
 import SwiftyStoreKit
+import JGProgressHUD
 
 //Extension to add tap gesture to dismiss keyboard
 extension UIViewController {
@@ -60,6 +61,8 @@ class Login: UIViewController {
     
     // Check is authorization details are correct.
     func AuthUser(uName: String, pWord: String){
+        
+        
         Auth.auth().signIn(withEmail: uName, password: pWord) { (user, error) in
             
             if let error = error {
@@ -70,7 +73,10 @@ class Login: UIViewController {
             // If no error occured check is the company exists
             Functions.checkCompany(company: self.orgName, completionHandler: { (result) in
                 if result == true {
-                    
+                    let hud = JGProgressHUD()
+                    hud.textLabel.text = "SIGNING IN"
+                    hud.show(in: self.view)
+                    hud.dismiss(afterDelay: 6.0)
                     
                     self.app.scores.setValue(self.userName.text, forKey: "username")
                     //Check to see if there is a password stored in Keychain if not store the entered password
@@ -111,6 +117,7 @@ class Login: UIViewController {
         // If password exists run Auth function
         if let password = self.passWord.text
         {
+            
             AuthUser(uName: email!, pWord: password)
         } else {
             passOut.text = "email/password is Incorrect"
@@ -197,6 +204,7 @@ class Login: UIViewController {
                     self.orgName = self.orgNameIn.text
                 }
             }
+            
             AuthUser(uName: username, pWord: storedPassword!)
             
         }
@@ -229,6 +237,7 @@ class Login: UIViewController {
         
         // Setup hiding the keyboard on screen tap
         self.hideKeyboardWhenTappedAround()
+        
         
         // What to do if individual login
         if orgLogin == false {

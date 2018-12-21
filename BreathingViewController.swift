@@ -48,6 +48,7 @@ class BreathingViewController: UIViewController {
     @IBOutlet weak var focusButton: UIButton!
     @IBOutlet weak var beatsLabel: UILabel!
     @IBOutlet weak var beatsSelectLabel: UILabel!
+    @IBOutlet weak var bubbleView: UIView!
     
     var remainingTime: Int!
     var beats: Bool?
@@ -223,12 +224,16 @@ class BreathingViewController: UIViewController {
         }
     }
     
+    
     @objc func breathingTimeUpdate(){
         if fourSixBool == true {
             if fourSixInhale > 1 {
             fourSixInhale = fourSixInhale - 1
-            
-            //let minute = Int(fourSixInhale / 60) % 60
+                
+                UIView.animate(withDuration: 4.2, animations: {
+                    self.bubbleView.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
+                })
+
             let second = Int(fourSixInhale) % 60
                 BreathingTiming.textColor = UIColor.white
             BreathingTiming.text = String(format: "%01i", second)
@@ -236,41 +241,46 @@ class BreathingViewController: UIViewController {
                 print(fourSixExhale)
         } else if fourSixInhale <= 1 && fourSixExhale < 6 {
             fourSixExhale = fourSixExhale + 1
-            
-            //let minute = Int(fourSixExhale / 60) % 60
+                UIView.animate(withDuration: 6.5, animations: {
+                    self.bubbleView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+                })
+                
             let second = Int(fourSixExhale) % 60
             BreathingTiming.textColor = UIColor.cyan
             BreathingTiming.text = String(format: "%01i", second)
-            print(fourSixInhale)
-            print(fourSixExhale)
+            
         } else if fourSixExhale >= 6{
                 let second = 4
                 BreathingTiming.textColor = UIColor.white
                 BreathingTiming.text = String(format: "%01i", second)
+               
         fourSixInhale = 4
         fourSixExhale = 0
         }
+
         }
         
         if fiveFiveBool == true {
             if fiveFiveInhale > 1 {
                 fiveFiveInhale = fiveFiveInhale - 1
                 
-                //let minute = Int(fourSixInhale / 60) % 60
+                UIView.animate(withDuration: 5.2, animations: {
+                    self.bubbleView.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
+                })
+                
                 let second = Int(fiveFiveInhale) % 60
                 BreathingTiming.textColor = UIColor.white
                 BreathingTiming.text = String(format: "%01i", second)
-                print(fiveFiveInhale)
-                print(fiveFiveExhale)
+                
             } else if fiveFiveInhale <= 1 && fiveFiveExhale < 5 {
                 fiveFiveExhale = fiveFiveExhale + 1
-                
-                //let minute = Int(fourSixExhale / 60) % 60
+                UIView.animate(withDuration: 5.5, animations: {
+                    self.bubbleView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+                })
                 let second = Int(fiveFiveExhale) % 60
                 BreathingTiming.textColor = UIColor.cyan
                 BreathingTiming.text = String(format: "%01i", second)
-                print(fiveFiveInhale)
-                print(fiveFiveExhale)
+               
             } else if fiveFiveExhale >= 5{
                 let second = 5
                 BreathingTiming.textColor = UIColor.white
@@ -284,21 +294,23 @@ class BreathingViewController: UIViewController {
             if fiveSevenInhale > 1 {
                 fiveSevenInhale = fiveSevenInhale - 1
                 
-                //let minute = Int(fourSixInhale / 60) % 60
+                UIView.animate(withDuration: 5.2, animations: {
+                    self.bubbleView.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
+                })
                 let second = Int(fiveSevenInhale) % 60
                 BreathingTiming.textColor = UIColor.white
                 BreathingTiming.text = String(format: "%01i", second)
-                print(fiveSevenInhale)
-                print(fiveSevenExhale)
+               
             } else if fiveSevenInhale <= 1 && fiveSevenExhale < 7 {
                 fiveSevenExhale = fiveSevenExhale + 1
                 
-                //let minute = Int(fourSixExhale / 60) % 60
+                UIView.animate(withDuration: 7.5, animations: {
+                    self.bubbleView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+                })
                 let second = Int(fiveSevenExhale) % 60
                 BreathingTiming.textColor = UIColor.cyan
                 BreathingTiming.text = String(format: "%01i", second)
-                print(fiveSevenInhale)
-                print(fiveSevenExhale)
+                
             } else if fiveSevenExhale >= 7{
                 let second = 5
                 BreathingTiming.textColor = UIColor.white
@@ -556,6 +568,7 @@ class BreathingViewController: UIViewController {
             beatButtonsConstraint.constant = 30
         }
         
+        bubbleView.layer.cornerRadius = bubbleView.frame.width / 2
         
         alert.addAction(UIAlertAction(title: "YES", style: .default, handler: { (action) in
             print("YOU SAID YES")
