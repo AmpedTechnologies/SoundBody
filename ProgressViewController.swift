@@ -319,7 +319,7 @@ class ProgressViewController: UIViewController, UICollectionViewDelegate, UIColl
         var hrv = app.hrv
         var hrvAvg = 0
         
-        // UI Action depending on average HRV
+        /*( UI Action depending on average HRV
         if hrv.count != 0 {
             for i in 1...hrv.count - 1{
                 hrvAvg = hrvAvg + hrv[i]
@@ -334,9 +334,9 @@ class ProgressViewController: UIViewController, UICollectionViewDelegate, UIColl
         
         //Setup UI
         goalSettingButton.layer.cornerRadius = 5.0
-        hrvLabel.layer.cornerRadius = hrvLabel.frame.size.width / 2
-        hrvLabel.layer.masksToBounds = true
-        
+        //hrvLabel.layer.cornerRadius = hrvLabel.frame.size.width / 2
+        //hrvLabel.layer.masksToBounds = true
+        */
     }
     
     override func viewDidLoad() {
@@ -354,10 +354,11 @@ class ProgressViewController: UIViewController, UICollectionViewDelegate, UIColl
         
         // Get information (title and badge URL) of completed Achievements
         getAchieve(company: orgName) { (result) in
+            self.Achieve.insert(Achievements(badge: "https://firebasestorage.googleapis.com/v0/b/amped-wellness.appspot.com/o/Challenges%2FBadges%2FbadgeFour.png?alt=media&token=c2d77439-d944-48c1-8336-afeb539795d4", title: "Ready to RVIVE"), at: 0)
             self.collectionView.reloadData()
         }
         
-        // Wellness, sleep, and Mindfullness Ring Outputs.
+        /* Wellness, sleep, and Mindfullness Ring Outputs.
         if let wellnessScore = app.scores.value(forKey: "averagePostScore") as? Int {
             wellnessRing.startProgress(to: CGFloat(wellnessScore), duration: 5)
             Functions.updateData(company: orgName, area: "wellnessScore", count: wellnessScore)
@@ -368,7 +369,7 @@ class ProgressViewController: UIViewController, UICollectionViewDelegate, UIColl
             let total = (Double(getSleepScore)/Double(14)) * 100
             sleepScore.startProgress(to: CGFloat(total), duration: 5)
         }
-        
+        */
         // Run methods to retrieve and calc most selected pathway and programs
         topPathways()
         topPrograms()

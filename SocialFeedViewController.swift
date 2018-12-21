@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import Kingfisher
+import MessageUI
 
 
 class socialCell: UITableViewCell {
@@ -117,8 +118,9 @@ class Posts {
     var postId: String!
     var comNumb: Int!
     var link: String!
+    var senderID: String!
     
-    init(name: String, profileImage: String, message: String, postImage: String, postId: String, comNumb: Int, link: String)
+    init(name: String, profileImage: String, message: String, postImage: String, postId: String, comNumb: Int, link: String, senderID: String)
     {
         self.name = name
         self.profileImage = profileImage
@@ -127,6 +129,7 @@ class Posts {
         self.postId = postId
         self.comNumb = comNumb
         self.link = link
+        self.senderID = senderID
     }
 }
 
@@ -141,7 +144,7 @@ class Friend{
     }
 }
 
-class SocialFeedViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate {
+class SocialFeedViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, MFMailComposeViewControllerDelegate {
 
     
     @IBOutlet weak var collectionView: UICollectionView!
@@ -195,6 +198,8 @@ class SocialFeedViewController: UIViewController, UITableViewDelegate, UITableVi
         
         ref = Database.database().reference()
         orgName = app.scores.value(forKey: "organization") as! String
+        
+        getUserSenderID(company: orgName)
         
         // Set the background color of the view
         view.backgroundColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
@@ -291,6 +296,79 @@ class SocialFeedViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        var swipeConfig = UISwipeActionsConfiguration(actions: [])
+        if self.userSenderID == self.posts[indexPath.row].senderID {
+        let deleteAction = self.contextualDeleteAction(forRowAtIndexPath: indexPath)
+        let flagAction = self.contextualToggleFlagAction(forRowAtIndexPath: indexPath)
+        swipeConfig = UISwipeActionsConfiguration(actions: [deleteAction, flagAction])
+        }
+        if self.userSenderID != self.posts[indexPath.row].senderID{
+            let flagAction = self.contextualToggleFlagAction(forRowAtIndexPath: indexPath)
+            swipeConfig = UISwipeActionsConfiguration(actions: [flagAction])
+        }
+        return swipeConfig
+    }
+    
+    func contextualDeleteAction(forRowAtIndexPath indexPath: IndexPath)  -> UIContextualAction {
+        let delete = UIContextualAction(style: .normal,
+                                        title: "Delete") { (contextAction: UIContextualAction, sourceView: UIView, completionHandler: (Bool) -> Void) in
+                                            print(self.userSenderID)
+                                            print(self.posts[indexPath.row].senderID)
+                                            print(self.posts[indexPath.row].postId)
+                                        self.ref.child(self.orgName).child("Nation").child("Feed").child(self.posts[indexPath.row].postId).removeValue()
+                                            self.posts.remove(at: indexPath.row)
+                                            self.tableView.reloadData()
+                
+                                
+                                            print("DELETED")
+        }
+        
+        delete.backgroundColor = UIColor.red
+        return delete
+    }
+    
+    func contextualToggleFlagAction(forRowAtIndexPath indexPath: IndexPath) -> UIContextualAction {
+        // 2
+        let flag = UIContextualAction(style: .normal,
+                                        title: "Report Post") { (contextAction: UIContextualAction, sourceView: UIView, completionHandler: (Bool) -> Void) in
+                                            self.sendEmail(postID: self.posts[indexPath.row].postId)
+                                            print("FLAGGED")
+        }
+                                            
+        flag.backgroundColor = UIColor.orange
+        return flag
+    }
+    
+    func sendEmail(postID: String) {
+        if MFMailComposeViewController.canSendMail(){
+            let mail = MFMailComposeViewController()
+            mail.mailComposeDelegate = self
+            
+            mail.setSubject("Report an Inappropriate post \(postID)")
+            mail.setToRecipients(["information@ampedtechnologies.com"])
+            mail.setMessageBody("An inapproriate post has been submitted to the Nation. The post code is \(postID). If you would like to add any more information, please do so below. ", isHTML: true)
+            
+            present(mail, animated: true)
+        } else {
+            print("Email Fail")
+        }
+    }
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true)
+    }
+    /*
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func table(_ tablView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete) {
+            print("Delete cell")
+        }
+    }
+    */
     var posts: [Posts] = []
     var friendPosts: [Posts] = []
     
@@ -312,7 +390,7 @@ class SocialFeedViewController: UIViewController, UITableViewDelegate, UITableVi
             let link        = snap.childSnapshot(forPath: "link").value as! String
             commentNumb     = Int(snap.childSnapshot(forPath: "Comments").childrenCount)
             
-                let p = Posts(name: name, profileImage: profilePic, message: message, postImage: postImage, postId: postId, comNumb: commentNumb, link: link)
+                let p = Posts(name: name, profileImage: profilePic, message: message, postImage: postImage, postId: postId, comNumb: commentNumb, link: link, senderID: senderID)
 
             self.posts.insert(p, at: 0)
             if self.friendsArray.contains(senderID) {
@@ -329,6 +407,16 @@ class SocialFeedViewController: UIViewController, UITableViewDelegate, UITableVi
     
     var newsArray: [Posts] = []
     var friendsArray: [String] = []
+    
+    var userSenderID: String!
+    
+    func getUserSenderID(company: String){
+        let userID: String = (Auth.auth().currentUser?.uid)!
+        
+        ref.child(company).child(userID).child("userDetails").observeSingleEvent(of: .value) { (snapshot) in
+            self.userSenderID = snapshot.childSnapshot(forPath: "senderId").value as! String
+        }
+    }
     
     
     // Get the list of senderIds the user has added to their friends nation

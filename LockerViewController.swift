@@ -325,7 +325,7 @@ class LockerViewController: UIViewController {
         saveLocker()
         let perc = Int(percentage)
         //Update the exit alert to output the percentage of programs availble to the user
-        exitAlert.message = "You have access to \(perc)% of AmpedRx programs"
+        exitAlert.message = "You have access to \(perc)% of RVIVE programs"
         self.present(exitAlert, animated: true)
     }
     

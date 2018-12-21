@@ -54,7 +54,7 @@ class ProfileViewController: UIViewController, MFMailComposeViewControllerDelega
             let mail = MFMailComposeViewController()
             mail.mailComposeDelegate = self
             
-            mail.setSubject("AmpedRx FeedBack")
+            mail.setSubject("RVIVE FeedBack")
             mail.setMessageBody("", isHTML: true)
             mail.setToRecipients(["information@ampedtechnologies.com"])
             present(mail, animated: true, completion: nil)

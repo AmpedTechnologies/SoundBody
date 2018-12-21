@@ -33,7 +33,7 @@
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "appIcon120.png",
+      "filename" : "RviveAppIconTwo120.png",
       "scale" : "2x"
     },
     {
@@ -89,7 +89,7 @@
     {
       "size" : "1024x1024",
       "idiom" : "ios-marketing",
-      "filename" : "appIcon.png",
+      "filename" : "RviveAppIconTwo1024.png",
       "scale" : "1x"
     }
   ],

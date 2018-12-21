@@ -32,6 +32,9 @@ class progVideos {
 
 class VideoViewController: UIViewController {
 
+    @IBOutlet weak var infoButton: UIButton!
+    @IBAction func infoButton(_ sender: Any) {
+    }
     var stars = 0.0
     var met = 0.0
     var ref: DatabaseReference!
@@ -410,7 +413,7 @@ class VideoViewController: UIViewController {
         } else if pathway == "Fatigue" {
             locker = fatLocker
         }
-        
+        print(lockerEquipment)
         // Remove certain items depending on time
         if time == 5 {
             if lockerEquipment.contains("Marc Pro") {
@@ -467,6 +470,7 @@ class VideoViewController: UIViewController {
     
     //Play video function
     func playVideo(){
+        print(self.progVidArray[0].video)
         //Setup first video and audio files
         self.exerciseTime = self.progVidArray[0].time
         self.exName.text = self.progVidArray[0].name
@@ -602,9 +606,12 @@ class VideoViewController: UIViewController {
     func Equip(locker: [String], totTime: Int, index: Int, completition: @escaping (Bool)-> Void){
         if lockerEquipment.contains(locker[index]){
             if index < locker.count - 1{
+                print(lockerEquipment)
                 self.loadAmpedRxProgs(path: self.pathway!, time: ("\(self.time) Min"), modality: self.locker[index], area: self.progArea) { (result) in
-                    
+                    print("POST VIDEO SETUP")
+                    print(self.t)
                     if self.t <= 0{
+                        print(self.t)
                         completition(true)
                         return
                     } else {
@@ -633,17 +640,17 @@ class VideoViewController: UIViewController {
         }
     }
     
-    //Load the application video into the ampedRx program - based on locker equipment function.
+    //Load the application video into the RVIVE program - based on locker equipment function.
     func loadAmpedRxProgs(path: String, time: String, modality: String, area: String, completitionHandler: @escaping (_ status: Int)-> Void){
             var dt = 0
-        ref.child("Programs").child("AmpedRx").child(path).child(time).child(modality).child(area).observeSingleEvent(of: .value) { (Snapshot) in
+        ref.child("Programs").child("Full Programs").child(modality).child(area).observeSingleEvent(of: .value) { (Snapshot) in
             let snap = Snapshot.children.allObjects as? [DataSnapshot]
             for s in snap!{
                 
                 if s.childSnapshot(forPath: "name").exists() {
                     let name            = s.childSnapshot(forPath: "name").value as! String
                     let video           = s.childSnapshot(forPath: "video").value as! String
-                    var databaseTime    = s.childSnapshot(forPath: "time").value as! Int
+                    var databaseTime    = s.childSnapshot(forPath: "\(path) times").childSnapshot(forPath: time).value as! Int
                     let audio           = s.childSnapshot(forPath: "audio").value as! String
                     
                     let remain = self.t
@@ -654,12 +661,13 @@ class VideoViewController: UIViewController {
                         databaseTime = remain!
                         let pv = progVideos(name: name, video: video, time: databaseTime, audio: audio)
                         self.progVidArray.append(pv)
-                        
+                        print(self.progVidArray.count)
                     } else {
                         
                         dt += databaseTime
                         let pv = progVideos(name: name, video: video, time: databaseTime, audio: audio)
                         self.progVidArray.append(pv)
+                        print(self.progVidArray.count)
                     }
                 }
             }

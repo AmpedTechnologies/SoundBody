@@ -107,7 +107,7 @@ class ProgramSelectionViewController: UIViewController, UICollectionViewDelegate
     var lockerEquipment: [String] = []
     let dateFormat = DateFormatter()
     var cNumb = 0
-    var membership = "Free"
+    var PremMember = false
     var progD: [progDetails] = []
     var areaOne: [Areas] = []
     var programs: [prog] = []
@@ -116,7 +116,7 @@ class ProgramSelectionViewController: UIViewController, UICollectionViewDelegate
     
     let lastWeekDate = Calendar.current.date(byAdding: .weekOfYear, value: -1, to: Date())!
     
-    let premiumAlert = UIAlertController(title: "Unlock Premium Content?", message: "You need to sign up for an AmpedRx Membership to access the premium content", preferredStyle: .alert)
+    let premiumAlert = UIAlertController(title: "Unlock Premium Content?", message: "You need to sign up for an RVIVE Membership to access the premium content", preferredStyle: .alert)
     
     // UI Button Setup For the circle time buttons
     func ButtonSettings(Name: UIButton){
@@ -244,7 +244,7 @@ class ProgramSelectionViewController: UIViewController, UICollectionViewDelegate
             cell.titleButton.titleLabel?.lineBreakMode = NSLineBreakMode.byWordWrapping
             cell.titleButton.setTitle((progD[collectionView.tag].areas[indexPath.row].name), for: .normal)
             // set membership status
-            if membership == "Premium"{
+            if PremMember == true{
                 cell.lockedImage.isHidden = true
             } else {
             cell.lockedImage.isHidden = !(progD[collectionView.tag].areas[indexPath.row].premium)
@@ -260,7 +260,7 @@ class ProgramSelectionViewController: UIViewController, UICollectionViewDelegate
         progType = progD[collectionView.tag].name
         progArea = progD[collectionView.tag].areas[indexPath.row].name!
         if progD[collectionView.tag].areas[indexPath.row].premium == true {
-            if membership == "Premium" {
+            if PremMember == true {
                 self.pathwaySegue()
                 print("PREMIUM PROGRAM")
             } else {
@@ -374,14 +374,17 @@ class ProgramSelectionViewController: UIViewController, UICollectionViewDelegate
         backButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
         backButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
         backButton.setBackgroundImage(#imageLiteral(resourceName: "backIcon.png"), for: .normal)
+        backButton.layer.borderColor = UIColor.green.cgColor
+        backButton.layer.borderWidth = 2.0
+        backButton.layer.cornerRadius = backButton.bounds.width / 2
         backButton.addTarget(self, action: #selector(SocialFeedViewController.backButton(sender:)), for: .touchUpInside)
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
         
         // Setup navigation bar title
         let titleOut = UIImageView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-        titleOut.widthAnchor.constraint(equalToConstant: 104).isActive = true
-        titleOut.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        titleOut.image = #imageLiteral(resourceName: "Amped Logo --Theta White.png")
+        titleOut.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        titleOut.heightAnchor.constraint(equalToConstant: 21).isActive = true
+        titleOut.image = (UIImage(named: "RviveWhite"))
         self.navigationItem.titleView = titleOut
         
         // UI Setup for buttons
@@ -391,11 +394,12 @@ class ProgramSelectionViewController: UIViewController, UICollectionViewDelegate
 
         //Load membership status
         Functions.getMembershipInfo(company: orgName) { (result) in
-            self.membership = result
+            self.PremMember = result
         }
         //Setup Premium Alert
         premiumAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (result) in
             print("Going to in-app purchase screen")
+            self.performSegue(withIdentifier: "toPurchase", sender: self)
         }))
         premiumAlert.addAction(UIAlertAction(title: "Not now", style: .cancel, handler: nil))
         

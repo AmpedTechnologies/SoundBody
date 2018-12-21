@@ -139,10 +139,10 @@ class NewUserSignUp: UIViewController, SFSafariViewControllerDelegate, UITextVie
         
         //Setup the signUpNotice text in the textView
         let termLink = NSMutableAttributedString(string: "Terms and Conditions")
-        termLink.addAttribute(.link, value: "http://ampedtechnologies.com/ampedrxtermsconditions", range:  NSRange(location: 0, length: 20))
+        termLink.addAttribute(.link, value: "http://ampedtechnologies.com/termsconditions", range:  NSRange(location: 0, length: 20))
         
-        let privacyLink = NSMutableAttributedString(string: " and Privacy Policy for AmpedRx")
-        privacyLink.addAttribute(.link, value: "http://www.ampedtechnologies.com/ampedrxprivacyPolicy", range: NSRange(location: 4, length: 15))
+        let privacyLink = NSMutableAttributedString(string: " and Privacy Policy for RVIVE")
+        privacyLink.addAttribute(.link, value: "http://www.ampedtechnologies.com/privacyPolicy", range: NSRange(location: 4, length: 15))
         
         let statement = NSMutableAttributedString(string: "By creating an account you are agreeing to the ")
         statement.append(termLink)

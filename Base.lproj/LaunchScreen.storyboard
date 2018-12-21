@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14101" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -21,16 +21,24 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchScreen" translatesAutoresizingMaskIntoConstraints="NO" id="aCC-h2-kJk">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchRvive.png" translatesAutoresizingMaskIntoConstraints="NO" id="uZS-oS-0Mz">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wellness. Simplified." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RDv-G7-q7s">
+                                <rect key="frame" x="49" y="316" width="277" height="35"/>
+                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="30"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.16862745098039217" green="0.16862745098039217" blue="0.16862745098039217" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="aCC-h2-kJk" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="NHd-s9-E9c"/>
-                            <constraint firstAttribute="trailing" secondItem="aCC-h2-kJk" secondAttribute="trailing" id="UFx-x5-3Z6"/>
-                            <constraint firstItem="aCC-h2-kJk" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="pNP-CY-1gt"/>
-                            <constraint firstItem="aCC-h2-kJk" firstAttribute="bottom" secondItem="xb3-aO-Qok" secondAttribute="top" id="xyN-Ph-Aip"/>
+                            <constraint firstItem="uZS-oS-0Mz" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="Hge-mL-bNI"/>
+                            <constraint firstItem="RDv-G7-q7s" firstAttribute="centerY" secondItem="uZS-oS-0Mz" secondAttribute="centerY" id="S6P-r8-3Ah"/>
+                            <constraint firstAttribute="trailing" secondItem="uZS-oS-0Mz" secondAttribute="trailing" id="SBw-gg-1TZ"/>
+                            <constraint firstItem="RDv-G7-q7s" firstAttribute="centerX" secondItem="uZS-oS-0Mz" secondAttribute="centerX" id="TlC-Xm-C9J"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="uZS-oS-0Mz" secondAttribute="bottom" id="d5Z-kH-gNa"/>
+                            <constraint firstItem="uZS-oS-0Mz" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="zFl-U2-qRd"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -40,6 +48,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="launchScreen" width="750" height="1334"/>
+        <image name="launchRvive.png" width="750" height="1334"/>
     </resources>
 </document>

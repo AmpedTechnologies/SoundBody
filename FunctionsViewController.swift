@@ -46,13 +46,13 @@ class Functions {
     }
     
     // Function to check on the status of the users privacy policy
-    class func getMembershipInfo(company: String, completionHandler:@escaping (_ status: String)-> Void) {
+    class func getMembershipInfo(company: String, completionHandler:@escaping (_ status: Bool)-> Void) {
         
         ref.child(company).child(userID).child("userDetails").observeSingleEvent(of: .value, with: { (snapshot) in
             guard
-                let result = snapshot.childSnapshot(forPath: "Membership Status").value as? String
+                let result = snapshot.childSnapshot(forPath: "Premium Membership").value as? Bool
                 else {
-                    completionHandler("Free")
+                    completionHandler(false)
                     return
             }
             completionHandler(result)
@@ -157,6 +157,7 @@ class Functions {
         
         ref.child(company).child(userID).child("userDetails").updateChildValues(["Setup Complete Date" : completeDate])
     }
+    
     
     /*
     class func checkForSetup(company: String, completionHandler:@escaping (_ status: Bool)-> Void) {

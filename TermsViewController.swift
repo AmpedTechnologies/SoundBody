@@ -42,7 +42,7 @@ class TermsViewController: UIViewController {
     
     // Button action to send user to Amped Tech privacy policy on website.
     @IBAction func privacyPolicyButtonAction(_ sender: Any) {
-        if let url = URL(string: "www.ampedtechnologies.com/AmpedRxPrivacyPolicy"){
+        if let url = URL(string: "www.ampedtechnologies.com/PrivacyPolicy"){
             UIApplication.shared.open(url, options: [:])
         }
     }

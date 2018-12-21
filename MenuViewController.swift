@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import HealthKit
+import SwiftyStoreKit
 
 class chall{
     var title: String!
@@ -46,6 +47,8 @@ class MenuViewController: UIViewController {
     var sleepScore: Int?
     var sleepGoal: Int?
     var mindScore: Int?
+    var exDates: [Date] = []
+    var sharedSecret = "09a57095c7b04a9cb298c41d00815358"
     
     @IBOutlet weak var leadingCon: NSLayoutConstraint!
     @IBOutlet weak var trailCon: NSLayoutConstraint!
@@ -188,9 +191,11 @@ class MenuViewController: UIViewController {
         
 
         //Set Logo in title of nav bar
-        let logo = UIImage(named: "AmpedRx Small")
+        let logo = UIImage(named: "RviveWhite")
         let ImageView = UIImageView(image: logo!)
-        ImageView.contentMode = .scaleAspectFit
+        ImageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        ImageView.heightAnchor.constraint(equalToConstant: 21).isActive = true
+        //ImageView.contentMode = .scaleAspectFit
         self.navigationItem.titleView = ImageView
         
         //set menu button on nav bar
@@ -201,7 +206,10 @@ class MenuViewController: UIViewController {
         menuButton.addTarget(self, action: #selector(MenuViewController.menuButton(sender:)), for: .touchUpInside)
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButton)
         
-        
+        if orgName == "individual" {
+        verifySubscription(id: "RVIVE.sub.allaccessmonthly", sharedSecret: sharedSecret)
+        verifySubscription(id: "RVIVE.sub.allaccessyearly", sharedSecret: sharedSecret)
+        }
     }
     
     // Pathway Button Constraints
@@ -347,6 +355,7 @@ class MenuViewController: UIViewController {
     func loadAchieve(){
         checkAchievement(company: orgName) { (result) in
             self.totalSessions = result
+        
             
             // if total sessions == 10
             if result == 10 {
@@ -511,6 +520,77 @@ class MenuViewController: UIViewController {
             healthKitStore.execute(query)
         }
         
+    }
+    
+    // IN-app purchase verification
+    func verifySubscription(id: String, sharedSecret: String) {
+        print("VERIFYING")
+        
+        let appleValidator = AppleReceiptValidator(service: .production, sharedSecret: sharedSecret)
+        SwiftyStoreKit.verifyReceipt(using: appleValidator) { result in
+            switch result {
+            case .success(let receipt):
+                let productId = id
+                // Verify the purchase of a Subscription
+                let purchaseResult = SwiftyStoreKit.verifySubscription(
+                    ofType: .autoRenewable,
+                    productId: productId,
+                    inReceipt: receipt)
+                
+                switch purchaseResult {
+                case .purchased(let expiryDate, let items):
+                    print("\(productId) is valid until \(expiryDate)")
+                    
+                    self.exDates.append(expiryDate)
+                    self.checkStatus()
+                case .expired(let expiryDate, let items):
+                    print("-----------------")
+                    print("\(productId) is expired since \(expiryDate)")
+                    print("-----------------")
+                    
+                    
+                    self.exDates.append(expiryDate)
+                    self.checkStatus()
+                case .notPurchased:
+                    print("The user has never purchased \(productId)")
+                    print("-----------------")
+                    //self.demoButton.isHidden = false
+                    //self.updateUserProfile(premium: false)
+                    //self.app.user.set(false, forKey: "premium")
+                    //res = false
+                    self.checkStatus()
+                    
+                }
+                
+            case .error(let error):
+                print("Receipt verification failed: \(error)")
+                
+            }
+        }
+        
+    }
+    
+    func updateUserProfile(company: String, premium: Bool){
+        let userId: String = (Auth.auth().currentUser?.uid)!
+        
+        ref.child(company).child(userId).child("userDetails").updateChildValues(["Premium Membership" : premium])
+        
+    }
+    
+    func checkStatus(){
+        if exDates.count > 0 {
+            let sortedAry = exDates.sorted(by: {$0 > $1})
+            
+            if sortedAry[0] > Date() {
+                self.updateUserProfile(company: orgName, premium: true)
+                print("YOU HAVE A MEMBERSHIP")
+            } else {
+                self.updateUserProfile(company: orgName, premium: false)
+                print("YOU NEED TO SIGN UP")
+            }
+        } else {
+            print("User has never purchased")
+        }
     }
     
 }

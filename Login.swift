@@ -13,6 +13,7 @@ import KeychainSwift
 import LocalAuthentication
 import Kingfisher
 import CryptoSwift
+import SwiftyStoreKit
 
 //Extension to add tap gesture to dismiss keyboard
 extension UIViewController {
@@ -56,6 +57,7 @@ class Login: UIViewController {
     var orgName: String!
     var newUser: String!
     
+    
     // Check is authorization details are correct.
     func AuthUser(uName: String, pWord: String){
         Auth.auth().signIn(withEmail: uName, password: pWord) { (user, error) in
@@ -73,6 +75,7 @@ class Login: UIViewController {
                     self.app.scores.setValue(self.userName.text, forKey: "username")
                     //Check to see if there is a password stored in Keychain if not store the entered password
                     if self.keychain.get("password") == nil {
+                        let pass = self.passWord.text?.sha256()
                         self.keychain.set(self.passWord.text!, forKey: "password")
                     }
                     self.app.scores.setValue(self.orgName, forKey: "organization")
@@ -291,5 +294,6 @@ class Login: UIViewController {
             self.evaulateTocuhIdAuthenticity(context: context)
         }
     }
+    
     
 }
