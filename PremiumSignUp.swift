@@ -22,7 +22,7 @@ class PremiumSignUp: UIViewController {
     @IBOutlet weak var freeVersionButton: UIButton!
     @IBOutlet weak var monthView: UIView!
     @IBOutlet weak var yearView: UIView!
-    @IBOutlet weak var lifetimeView: UIView!
+    //@IBOutlet weak var lifetimeView: UIView!
     @IBOutlet weak var subscriptionNotice: UITextView!
     
     var newUser: String!
@@ -79,16 +79,16 @@ class PremiumSignUp: UIViewController {
         yearView.addGestureRecognizer(yearTap)
         yearView.isUserInteractionEnabled = true
         
-        let lifetimeTap = UITapGestureRecognizer(target: self, action: #selector(PremiumSignUp.lifetimeButton))
-        lifetimeView.addGestureRecognizer(lifetimeTap)
-        lifetimeView.isUserInteractionEnabled = true
+        //let lifetimeTap = UITapGestureRecognizer(target: self, action: #selector(PremiumSignUp.lifetimeButton))
+        //lifetimeView.addGestureRecognizer(lifetimeTap)
+        //lifetimeView.isUserInteractionEnabled = true
         
         monthView.layer.cornerRadius = 6.0
         monthView.layer.masksToBounds = true
         yearView.layer.cornerRadius = 6.0
         yearView.layer.masksToBounds = true
-        lifetimeView.layer.cornerRadius = 6.0
-        lifetimeView.layer.masksToBounds = true
+       // lifetimeView.layer.cornerRadius = 6.0
+        //lifetimeView.layer.masksToBounds = true
         
         demoAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (result) in
             self.updateUserMembership(company: self.orgName, premium: true)
@@ -105,7 +105,7 @@ class PremiumSignUp: UIViewController {
         
         privacyPolicy.addAttribute(.link, value: "http://www.ampedtechnologies.com/privacyPolicy", range: NSRange(location: 5, length: 14))
         
-        let subNotice = NSMutableAttributedString(string: "Subscription Terms: All subscriptions are automatically renewed unless turned off in Account Settings at least 24h before current period ends. Payment is charged through your iTunes account.")
+        let subNotice = NSMutableAttributedString(string: "Subscription Terms: RVIVE monthly subscription is $5.99. RVIVE yearly subscription is $49.99. All subscriptions are automatically renewed unless turned off in Account Settings at least 24h before current period ends. Payment is charged through your iTunes account. Any unused portion of a free trial period, if offered, will be forfeited when the user purchases a subscription.")
         
         subNotice.append(terms)
         subNotice.append(privacyPolicy)

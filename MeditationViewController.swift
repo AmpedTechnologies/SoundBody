@@ -33,6 +33,7 @@ class MeditationViewController: UIViewController {
     
     
     
+    @IBOutlet weak var infoButton: UIButton!
     @IBOutlet weak var exitButton: UIButton!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var totalTimeOut: UILabel!
@@ -42,6 +43,9 @@ class MeditationViewController: UIViewController {
     
     var ref: DatabaseReference!
     let app = UIApplication.shared.delegate as! AppDelegate
+    let beatsAlert = UIAlertController(title: "Use Headphones", message: "To get the best results please use headphones when listening to binaural beats", preferredStyle: .alert)
+    
+    let infoAlert = UIAlertController(title: "", message: "", preferredStyle: .alert)
     
     let healthStore = HKHealthStore()
     
@@ -57,6 +61,11 @@ class MeditationViewController: UIViewController {
     var startTime: Date!
     var endTime: Date!
     var prog = 0.0
+    var infoTitle: String!
+    var infoMessageOne: String!
+    var infoMessageTwo: String!
+    var infoMessageThree: String!
+    var infoMessageFour: String!
     
     var playerViewController = AVPlayerViewController()
     var playerView = AVPlayer()
@@ -89,14 +98,29 @@ class MeditationViewController: UIViewController {
         }
     }
     
+    //Information button
+    @IBAction func infoButton(_ sender: Any) {
+        present(infoAlert, animated: true)
+    }
+    
+    
     // Play/pause button Action
     @IBAction func playButton(_ sender: Any) {
+        if progType == "Binaural Beats" {
+            present(beatsAlert, animated: true)
+        }
         if playSelected == false {
             if timeTotal! > 0{
                 startTime = Date()
                 playSelected = true
                 timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(VideoViewController.updateTime), userInfo: nil, repeats: true)
                 playButton.setBackgroundImage(#imageLiteral(resourceName: "pauseButtonGreen.png"), for: .normal)
+                do {
+                    try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+                }
+                catch {
+                    // report for an error
+                }
                 playerOne.play()
                 queuePlayer.play()
                 
@@ -204,7 +228,12 @@ class MeditationViewController: UIViewController {
         let hide = UITapGestureRecognizer(target: self, action: #selector(hideButtons))
         videoOut.addGestureRecognizer(hide)
         
-        // Do any additional setup after loading the view.
+        beatsAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        infoAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        getAlertInfo(modality: progType) { (result) in
+            self.infoAlert.title = self.infoTitle
+            self.infoAlert.message = "\r\r\u{2022} \(self.infoMessageOne!)\r\r\u{2022} \(self.infoMessageTwo!)\r\r\u{2022} \(self.infoMessageThree!)\r\r\u{2022} \(self.infoMessageFour!)"
+        }
     }
     
     //setup Hide buttons function
@@ -226,6 +255,18 @@ class MeditationViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    //get alert info
+    func getAlertInfo(modality: String, complete:@escaping (String)-> Void){
+        ref.child("Modality Information").child(modality).observeSingleEvent(of: .value) { (snapshot) in
+            self.infoTitle = snapshot.childSnapshot(forPath: "Title").value as! String
+            self.infoMessageOne = snapshot.childSnapshot(forPath: "MessageOne").value as! String
+            self.infoMessageTwo = snapshot.childSnapshot(forPath: "MessageTwo").value as! String
+            self.infoMessageThree = snapshot.childSnapshot(forPath: "MessageThree").value as! String
+            self.infoMessageFour = snapshot.childSnapshot(forPath: "MessageFour").value as! String
+            complete ("Complete")
+        }
     }
     
     // Function to pull down the necessary information from the database

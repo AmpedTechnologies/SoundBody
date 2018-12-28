@@ -33,8 +33,7 @@ class progVideos {
 class VideoViewController: UIViewController {
 
     @IBOutlet weak var infoButton: UIButton!
-    @IBAction func infoButton(_ sender: Any) {
-    }
+    
     var stars = 0.0
     var met = 0.0
     var ref: DatabaseReference!
@@ -78,16 +77,23 @@ class VideoViewController: UIViewController {
     let zero = 0
     var progVidArray: [progVideos] = []
     var timeRemain = 0
+    var infoTitle: String!
+    var infoMessageOne: String!
+    var infoMessageTwo: String!
+    var infoMessageThree: String!
+    var infoMessageFour: String!
     
     var lockerEquipment: [String] = []
-    var soreLocker =  ["Marc Pro", "Game Ready", "VibHH", "Myofascial Roller", "Myofascial Ball", "Myofascial Stick", "Compex", "Ice", "Heat"]
-    var fatLocker = ["Sauna", "Cryotherapy", "Ice Bath", "Heat", "Normatec", "Marc Pro", "Compex", "VibWB", "VibHH", "IASTM", "Myofascial Roller", "Myofascial Roller", "Myofascial Stick", "Floss Band"]
+    var soreLocker =  ["Marc Pro", "Game Ready", "VibHH", "Myofascial Roller", "Myofascial Ball", "Myofascial Stick", "Compex", "Ice", "Heat", "MobEx"]
+    var fatLocker = ["Sauna", "Cryotherapy", "Ice Bath", "Heat", "Normatec", "Marc Pro", "Compex", "Vibration Plate", "VibHH", "IASTM", "Myofascial Roller", "Myofascial Ball", "Myofascial Stick", "Floss Band", "MobEx"]
     var mindLocker = ["Binuaral Beats", "Guided Meditation", "Unguided Meditation"]
-    var mobLocker = ["Cryotherapy", "Heat", "Normatec", "VibWB", "VibHH", "IASTM", "Myofascial Roller", "Myofascial Roller", "Myofascial Stick", "Floss Band", "Band"]
+    var mobLocker = ["Cryotherapy", "Heat", "Normatec", "Vibration Plate", "VibHH", "IASTM", "Myofascial Roller", "Myofascial Ball", "Myofascial Stick", "Floss Band", "Resistance Band", "MobEx"]
     var locker: [String] = []
     
     let playButton = UIButton(frame: CGRect(x: 0, y: 0, width: 35, height: 35))
     let pauseButton = UIButton(frame: CGRect(x: 0, y: 0, width: 35, height: 35))
+    
+    let infoAlert = UIAlertController(title: "", message: "", preferredStyle: .alert)
     
     @IBOutlet weak var rating: CosmosView!
     @IBOutlet weak var yesButton: UIButton!
@@ -107,6 +113,11 @@ class VideoViewController: UIViewController {
     @IBOutlet weak var nextExName: UILabel!
     @IBOutlet weak var exName: UILabel!
     @IBOutlet weak var nextExImage: UIImageView!
+    
+    //Present info alert when press
+    @IBAction func infoButton(_ sender: Any) {
+        self.present(infoAlert, animated: true)
+    }
     
     // Setup No button on the sudo alert
     @IBAction func noAlertButton(_ sender: Any) {
@@ -570,11 +581,31 @@ class VideoViewController: UIViewController {
         okButton.layer.borderColor = UIColor.gray.cgColor
         okButton.layer.borderWidth = 1.0
         
+        //Setup Information Alert
+        getAlertInfo(modality: progType) { (result) in
+            self.infoAlert.title = self.infoTitle
+            self.infoAlert.message = "\r\r\u{2022} \(self.infoMessageOne!)\r\r\u{2022} \(self.infoMessageTwo!)\r\r\u{2022} \(self.infoMessageThree!)\r\r\u{2022} \(self.infoMessageFour!)"
+        }
+        
+        infoAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    //get alert info
+    func getAlertInfo(modality: String, complete:@escaping (String)-> Void){
+        ref.child("Modality Information").child(modality).observeSingleEvent(of: .value) { (snapshot) in
+            self.infoTitle = snapshot.childSnapshot(forPath: "Title").value as! String
+            self.infoMessageOne = snapshot.childSnapshot(forPath: "MessageOne").value as! String
+            self.infoMessageTwo = snapshot.childSnapshot(forPath: "MessageTwo").value as! String
+            self.infoMessageThree = snapshot.childSnapshot(forPath: "MessageThree").value as! String
+            self.infoMessageFour = snapshot.childSnapshot(forPath: "MessageFour").value as! String
+            complete ("Complete")
+        }
     }
     
     // Get program video and add to video array so they can be displayed on the screen
@@ -604,9 +635,11 @@ class VideoViewController: UIViewController {
     
     // Find what equipment the user has in their locker
     func Equip(locker: [String], totTime: Int, index: Int, completition: @escaping (Bool)-> Void){
+    print("--- \(index)-----")
         if lockerEquipment.contains(locker[index]){
-            if index < locker.count - 1{
+            if index < locker.count{
                 print(lockerEquipment)
+                print(locker)
                 self.loadAmpedRxProgs(path: self.pathway!, time: ("\(self.time) Min"), modality: self.locker[index], area: self.progArea) { (result) in
                     print("POST VIDEO SETUP")
                     print(self.t)
@@ -615,6 +648,7 @@ class VideoViewController: UIViewController {
                         completition(true)
                         return
                     } else {
+                        print("The index is \(index)")
                         self.Equip(locker: locker, totTime: self.timeRemain, index: index + 1, completition: { (result) in
                             
                             if self.t <= 0{
@@ -630,6 +664,7 @@ class VideoViewController: UIViewController {
                 return
             }
         } else {
+            print("THE INDEX IS \(index)")
             self.Equip(locker: locker, totTime: self.timeRemain, index: index + 1, completition: { (result) in
                 print("Not in locker")
                 if self.t <= 0{
@@ -643,16 +678,20 @@ class VideoViewController: UIViewController {
     //Load the application video into the RVIVE program - based on locker equipment function.
     func loadAmpedRxProgs(path: String, time: String, modality: String, area: String, completitionHandler: @escaping (_ status: Int)-> Void){
             var dt = 0
+        print(modality)
+        print(area)
         ref.child("Programs").child("Full Programs").child(modality).child(area).observeSingleEvent(of: .value) { (Snapshot) in
             let snap = Snapshot.children.allObjects as? [DataSnapshot]
             for s in snap!{
-                
+
                 if s.childSnapshot(forPath: "name").exists() {
                     let name            = s.childSnapshot(forPath: "name").value as! String
                     let video           = s.childSnapshot(forPath: "video").value as! String
                     var databaseTime    = s.childSnapshot(forPath: "\(path) times").childSnapshot(forPath: time).value as! Int
                     let audio           = s.childSnapshot(forPath: "audio").value as! String
+                    print(name)
                     
+                    if databaseTime > 0 {
                     let remain = self.t
                     self.t -= databaseTime
 
@@ -668,6 +707,7 @@ class VideoViewController: UIViewController {
                         let pv = progVideos(name: name, video: video, time: databaseTime, audio: audio)
                         self.progVidArray.append(pv)
                         print(self.progVidArray.count)
+                    }
                     }
                 }
             }

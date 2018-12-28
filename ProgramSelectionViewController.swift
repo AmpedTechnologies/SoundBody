@@ -365,6 +365,11 @@ class ProgramSelectionViewController: UIViewController, UICollectionViewDelegate
         orgName = app.scores.value(forKey: "organization") as! String
         ref = Database.database().reference()
         
+        // Set screen to show 15 min programs
+        ButtonSettings(Name: fifteenMinuteButton)
+        timeOut = 15
+        pathwaySelected()
+        
         // Setup Delegates
         tableView.delegate = self
         tableView.dataSource = self
@@ -389,7 +394,7 @@ class ProgramSelectionViewController: UIViewController, UICollectionViewDelegate
         
         // UI Setup for buttons
         initialButtonSettings(name: fiveMinuteButton)
-        initialButtonSettings(name: fifteenMinuteButton)
+        //initialButtonSettings(name: fifteenMinuteButton)
         initialButtonSettings(name: thirtyMinuteButton)
 
         //Load membership status

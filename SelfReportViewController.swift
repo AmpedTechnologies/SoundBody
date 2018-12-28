@@ -18,11 +18,11 @@ extension SelfReportViewController: AGCircularPickerDelegate {
         let valueComponents = values.map { return String(format: "%00002d", $0.value) }
         var fullString = valueComponents.joined(separator: ":")
         bodyScore = Int(fullString)!
-        if Int(fullString)! <= 20 {
+        if Int(fullString)! <= 25 {
             fullString = "Good "
-        } else if Int(fullString)! > 20 &&  Int(fullString)! <= 50 {
+        } else if Int(fullString)! > 25 &&  Int(fullString)! <= 50 {
             fullString = "Tired"
-        } else if Int(fullString)! > 50 &&  Int(fullString)! <= 80 {
+        } else if Int(fullString)! > 50 &&  Int(fullString)! <= 75 {
             fullString = "Tight"
         } else {
             fullString = "Sore "
@@ -164,13 +164,17 @@ class SelfReportViewController: UIViewController {
         
         // If the user has recommendations selected this section displays alert with necessary information
         if AmpedRx == true {
-        if total < 20 {
-            
-        } else if total >= 21 && total < 50 {
-            recAlert.message = "You should look at the mobility pathway"
-        } else  {
-            recAlert.message = " You should go to soreness"
-        }
+            if self.bodyScore >= 75 {
+                recAlert.message = "To feel RVIVED, the SORENESS pathway is reccommended for you today."
+            } else if self.bodyScore < self.mindScore {
+                recAlert.message = "To feel RVIVED, the MINDFULNESS pathway is reccommended for you today."
+            } else if self.bodyScore > self.mindScore {
+                if self.bodyScore > 25 &&  self.bodyScore <= 50 {
+                    recAlert.message = "To feel RVIVED, the FATIGUE pathway is reccommended for you today."
+                } else if self.bodyScore > 50 &&  self.bodyScore <= 75 {
+                    recAlert.message = "To feel RVIVED, the MOBILITY pathway is reccommended for you today."
+            }
+            }
         self.present(recAlert, animated: true)
         } else {
             print("NO RECOMMENDATION")

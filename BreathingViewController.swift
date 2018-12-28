@@ -49,7 +49,12 @@ class BreathingViewController: UIViewController {
     @IBOutlet weak var beatsLabel: UILabel!
     @IBOutlet weak var beatsSelectLabel: UILabel!
     @IBOutlet weak var bubbleView: UIView!
+    @IBOutlet weak var infoButton: UIButton!
+    @IBOutlet weak var playButton: UIButton!
     
+    let infoAlert = UIAlertController(title: "", message: "", preferredStyle: .alert)
+    
+    var totalSessionTime: Int!
     var remainingTime: Int!
     var beats: Bool?
     var beatsAdded = false
@@ -63,7 +68,12 @@ class BreathingViewController: UIViewController {
     var fiveSevenBool = false
     var cream: Bool!
     var tape: Bool!
-    
+    var infoTitle: String!
+    var infoMessageOne: String!
+    var infoMessageTwo: String!
+    var infoMessageThree: String!
+    var infoMessageFour: String!
+    var startTime: Date!
     var fourSixInhale = 4
     var fourSixExhale = 0
     
@@ -95,7 +105,7 @@ class BreathingViewController: UIViewController {
     let alert = UIAlertController(title: "Amplify your Breathing Session", message: "Add Binarual Beats to your breathing Session - YOU NEED TO CONNECT HEADPHONES TO USE THIS FEATURE", preferredStyle: .alert)
     let alertTwo = UIAlertController(title: "Session Paused", message: "Do you  also want to stop the Binarual Beats  Session", preferredStyle: .alert)
     let alertThree = UIAlertController(title: "SKIP SESSION", message: "Do you want skip the rest of your session?", preferredStyle: .alert)
-    
+    let cancelAlert = UIAlertController(title: "Are you sure you want to skip the rest of this program?", message: "", preferredStyle: .alert)
     
     @IBOutlet weak var fourSixButton: UIButton!
     @IBOutlet weak var fiveFiveButton: UIButton!
@@ -124,6 +134,10 @@ class BreathingViewController: UIViewController {
     func setBinarual ( tFreq: Float, bFreq: Float) {
        // binauralBeat.baseFrequency = tFreq
         //binauralBeat.beatFrequency = bFreq
+    }
+    //Present info alert
+    @IBAction func infoButton(_ sender: Any) {
+        self.present(infoAlert, animated: true)
     }
     
     func fourSixButtonReset() {
@@ -224,6 +238,18 @@ class BreathingViewController: UIViewController {
         }
     }
     
+    func setBreathingTime(ratio: String) {
+        if ratio == "4:6" {
+            //let seconds = Int(fourSixInhale) % 60
+            fourSixBool = true
+        } else if ratio == "5:5" {
+            //let seconds = Int(fiveFiveInhale) % 60
+            fiveFiveBool = true
+        } else if ratio == "5:7" {
+            //let seconds = Int(fiveSevenInhale) % 60
+            fiveSevenBool = true
+        }
+    }
     
     @objc func breathingTimeUpdate(){
         if fourSixBool == true {
@@ -231,7 +257,7 @@ class BreathingViewController: UIViewController {
             fourSixInhale = fourSixInhale - 1
                 
                 UIView.animate(withDuration: 4.2, animations: {
-                    self.bubbleView.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
+                    self.bubbleView.transform = CGAffineTransform(scaleX: 3, y: 3)
                 })
 
             let second = Int(fourSixInhale) % 60
@@ -265,7 +291,7 @@ class BreathingViewController: UIViewController {
                 fiveFiveInhale = fiveFiveInhale - 1
                 
                 UIView.animate(withDuration: 5.2, animations: {
-                    self.bubbleView.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
+                    self.bubbleView.transform = CGAffineTransform(scaleX: 3, y: 3)
                 })
                 
                 let second = Int(fiveFiveInhale) % 60
@@ -295,7 +321,7 @@ class BreathingViewController: UIViewController {
                 fiveSevenInhale = fiveSevenInhale - 1
                 
                 UIView.animate(withDuration: 5.2, animations: {
-                    self.bubbleView.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
+                    self.bubbleView.transform = CGAffineTransform(scaleX: 3, y: 3)
                 })
                 let second = Int(fiveSevenInhale) % 60
                 BreathingTiming.textColor = UIColor.white
@@ -454,14 +480,17 @@ class BreathingViewController: UIViewController {
         //Sound.play(file: "Focus15 (.02 in:out)", fileExtension: "wav", numberOfLoops: -1)
     }
     
+
     
     var playSelected = false
     @IBAction func playTimers(_ sender: Any) {
+        startTime = Date()
         if playSelected == false {
     if totalBreathingTime > 0{
         if fourSixBool == false && fiveFiveBool == false && fiveSevenBool == false {
             
         } else {
+        playButton.setImage(#imageLiteral(resourceName: "pauseButtonGreen.png"), for: .normal)
         playSelected = true
     totalTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(BreathingViewController.totalTimeUpdate), userInfo: nil, repeats: true)
         
@@ -472,30 +501,42 @@ class BreathingViewController: UIViewController {
         fiveFiveButton.isHidden = true
         fiveSevenButton.isHidden = true
         breathingRatioLabel.isHidden = true
-        self.present(alert, animated: true)
+        //self.present(alert, animated: true)
             }
             }
-    }
+        } else if playSelected == true {
+            playSelected = false
+            playButton.setImage(#imageLiteral(resourceName: "playbuttonGreen.png"), for: .normal)
+            totalTimer.invalidate()
+            breathingTimer.invalidate()
+        }
 }
     
     @IBAction func pauseTimers(_ sender: Any) {
+        if totalBreathingTime <= 0 {
+            Functions.updatePathwayInfo(company: self.orgName, program: self.progType, prog: self.progArea, pathway: self.pathway, stus: "Completed", time: "\(totalBreathingTime) Min", timeCompleted: self.totalBreathingTime )
+            performSegue(withIdentifier: "backToStart", sender: self)
+        } else {
+        self.present(cancelAlert, animated: true)
+        }
+        /*
         if playSelected == true {
             playSelected = false
         totalTimer.invalidate()
         breathingTimer.invalidate()
-            sleepPlayer?.pause()
-            focusPlayer?.pause()
-            medPlayer?.pause()
-            relaxPlayer?.pause()
+           // sleepPlayer?.pause()
+           // focusPlayer?.pause()
+            //medPlayer?.pause()
+            //relaxPlayer?.pause()
          //binauralBeat.playing ? binauralBeat.stop() : binauralBeat.stop()
-        fourSixButton.isHidden = false
-        fiveFiveButton.isHidden = false
-        fiveSevenButton.isHidden = false
-        breathingRatioLabel.isHidden = false
-            if beatsAdded == true{
-        self.present(alertTwo, animated: true)
+        //fourSixButton.isHidden = false
+        //fiveFiveButton.isHidden = false
+        //fiveSevenButton.isHidden = false
+        //breathingRatioLabel.isHidden = false
+            //if beatsAdded == true{
+        //self.present(alertTwo, animated: true)
             }
-        }
+        } */
     }
 
     @IBAction func NextButton(_ sender: Any) {
@@ -509,7 +550,7 @@ class BreathingViewController: UIViewController {
             }
             if breathingOnly == true {
                 var time = self.totalBreathingTime / 60
-                Functions.updatePathwayInfo(company: self.orgName, program: self.progType, prog: self.progArea, pathway: self.pathway, stus: "Completed", time: "\(time) Min", timeCompleted: self.totalBreathingTime * 60 )
+                Functions.updatePathwayInfo(company: self.orgName, program: self.progType, prog: self.progArea, pathway: self.pathway, stus: "Completed", time: "\(totalBreathingTime) Min", timeCompleted: self.totalBreathingTime * 60 )
                 
                 performSegue(withIdentifier: "backToStart", sender: self)
             }
@@ -547,6 +588,7 @@ class BreathingViewController: UIViewController {
         orgName = app.scores.value(forKey: "organization") as! String
         Sound.enabled = true
         NotificationCenter.default.addObserver(self, selector: #selector(reEnter), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        totalSessionTime = totalBreathingTime
         
         let focusSoundURL = URL(string: "https://firebasestorage.googleapis.com/v0/b/amped-wellness.appspot.com/o/programs%2FMindset%2FBinuaralBeatsTones%2FFocus15%20(.02%20in%3Aout).wav?alt=media&token=d621ec53-05cf-47ad-a21d-5d2fd3b53de4")
         FocusTone = AVPlayerItem(url: focusSoundURL!)
@@ -569,6 +611,23 @@ class BreathingViewController: UIViewController {
         }
         
         bubbleView.layer.cornerRadius = bubbleView.frame.width / 2
+        playButton.setImage(#imageLiteral(resourceName: "playbuttonGreen.png"), for: .normal)
+        setBreathingTime(ratio: progArea)
+        
+        cancelAlert.addAction(UIAlertAction(title: "YES", style: .default , handler: { (action) in
+            let endTime = Date()
+            self.totalTimer.invalidate()
+            self.breathingTimer.invalidate()
+            Functions.updatePathwayInfo(company: self.orgName, program: self.progType, prog: self.progArea, pathway: self.pathway, stus: "Skipped", time: "\(self.totalSessionTime!) Min", timeCompleted: (self.totalSessionTime * 60 - self.totalBreathingTime ))
+            
+            if self.startTime != nil {
+                Functions.saveMindMin(startTime: self.startTime, endTime: endTime)
+            }
+            
+            self.performSegue(withIdentifier: "backToStart", sender: self)
+        }))
+        
+        cancelAlert.addAction(UIAlertAction(title: "NO", style: .cancel , handler: nil))
         
         alert.addAction(UIAlertAction(title: "YES", style: .default, handler: { (action) in
             print("YOU SAID YES")
@@ -625,15 +684,15 @@ class BreathingViewController: UIViewController {
                 
                 }
             }
+            /*
             if self.breathingOnly == true {
                 var time = self.totalBreathingTime / 60
-                Functions.updatePathwayInfo(company: self.orgName, program: self.progType, prog: self.progArea, pathway: self.pathway, stus: "Completed", time: "\(time) Min", timeCompleted: self.totalBreathingTime )
+                Functions.updatePathwayInfo(company: self.orgName, program: self.progType, prog: self.progArea, pathway: self.pathway, stus: "Completed", time: "\(self.totalSessionTime!) Min", timeCompleted: self.totalSessionTime * 60 )
                 
                 self.performSegue(withIdentifier: "backToStart", sender: self)
             }
-            
+            */
         }))
-        
         alertThree.addAction(UIAlertAction(title: "NO", style: .cancel, handler: { (action) in
             self.totalBreathingTimeOut.isHidden = false
             self.BreathingTiming.isHidden = false
@@ -671,7 +730,13 @@ class BreathingViewController: UIViewController {
         ButtonSettingsReset(Name: relaxButton)
         ButtonSettingsReset(Name: sleepButton)
         
-        // Do any additional setup after loading the view.
+        //Setup Information Alert
+        getAlertInfo(modality: progType) { (result) in
+            self.infoAlert.title = self.infoTitle
+            self.infoAlert.message = "\r\r\u{2022} \(self.infoMessageOne!)\r\r\u{2022} \(self.infoMessageTwo!)\r\r\u{2022} \(self.infoMessageThree!)\r\r\u{2022} \(self.infoMessageFour!)"
+        }
+        
+        infoAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
     }
     
     func updatePathwayInfo(company: String, program: String, prog: String, pathway: String, stus: String!, time: String!) {
@@ -685,6 +750,18 @@ class BreathingViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    //get alert info
+    func getAlertInfo(modality: String, complete:@escaping (String)-> Void){
+        ref.child("Modality Information").child(modality).observeSingleEvent(of: .value) { (snapshot) in
+            self.infoTitle = snapshot.childSnapshot(forPath: "Title").value as! String
+            self.infoMessageOne = snapshot.childSnapshot(forPath: "MessageOne").value as! String
+            self.infoMessageTwo = snapshot.childSnapshot(forPath: "MessageTwo").value as! String
+            self.infoMessageThree = snapshot.childSnapshot(forPath: "MessageThree").value as! String
+            self.infoMessageFour = snapshot.childSnapshot(forPath: "MessageFour").value as! String
+            complete ("Complete")
+        }
     }
     
     
